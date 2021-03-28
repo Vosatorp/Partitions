@@ -1,5 +1,6 @@
 import typing as tp
 import json
+import matplotlib.pyplot as plt
 
 def check(Title: str,
           Points: tp.Dict[str, tp.Tuple[float, float]],
@@ -27,7 +28,7 @@ def check(Title: str,
                 res = max(res, dist(A, B))
         return res
 
-    def check_diameters():
+    def check_diameters() -> float:
         """
         Outputs the diameters of all parts, counts
         and returns the maximum diameter among all parts.
@@ -91,6 +92,19 @@ def check(Title: str,
                         return False
         print('All edges are in exactly two parts')
         return True
+
+    def draw_partition():
+        plt.figure(figsize=(7, 7))
+        for Part in Partition:
+            for i in range(len(Part)):
+                x1, y1 = Points[Part[i - 1]]
+                x2, y2 = Points[Part[i]]
+                plt.plot([x1, x2], [y1, y2], color='black')
+        plt.xlim((-0.7, 0.7))
+        plt.ylim((-0.7, 0.7))
+
+        plt.title(Title)
+        plt.show()
     
     print('\n' + Title)
     mxdiam = check_diameters()
@@ -100,6 +114,7 @@ def check(Title: str,
         print('Partition of Omega is correct')
     else:
         print('Partition is incorrect')
+    draw_partition()
 
     return None
 
@@ -118,10 +133,11 @@ def read_json(file):
         Partition = [eval(polygon) for polygon in raw_partition]
     return Title, Points, Omega, Partition
 
-check(*read_json('d5_omega2.json'))
-check(*read_json('d5_omega11.json'))
-check(*read_json('d5_omega121.json'))
-check(*read_json('d5_omega123.json'))
+check(*read_json('d5_omega6_2.json'))
+check(*read_json('d5_omega6_11.json'))
+check(*read_json('d5_omega6_121.json'))
+check(*read_json('d5_omega6_122.json'))
+check(*read_json('d5_omega6_123.json'))
 check(*read_json('d11_omega2.json'))
 check(*read_json('d13_omega2.json'))
 check(*read_json('d15_omega2.json'))
