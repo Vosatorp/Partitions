@@ -11,6 +11,7 @@ def check(Title: str,
     """
     The function takes the name of the partition(Title),
     a list of used points(Points), a tire(Omega),
+    which points are on the sides and which are not (Bitmask),
     and array(Partition) containing the polygons of the partition.
 
     It is assumed, that the points of Omega and Parts of Partition
