@@ -2,9 +2,11 @@ import typing as tp
 import json
 import matplotlib.pyplot as plt
 
+
 def check(Title: str,
           Points: tp.Dict[str, tp.Tuple[float, float]],
           Omega: tp.Tuple[str],
+          Bitmask: tp.Tuple[int],
           Partition: tp.List[tp.Tuple[str]]) -> None:
     """
     The function takes the name of the partition(Title),
@@ -16,7 +18,9 @@ def check(Title: str,
     """
 
     dist = lambda A, B: abs(complex(*Points[A]) - complex(*Points[B]))
+    vector = lambda A, B: (B[0] - A[0], B[1] - A[1])
     cross_product = lambda A, B: A[0] * B[1] - A[1] * B[0]
+    dot_product   = lambda A, B: A[0] * B[0] + A[1] * B[1]
 
     def get_diameter(Part: tp.Tuple[str]) -> float:
         """
@@ -93,7 +97,31 @@ def check(Title: str,
         print('All edges are in exactly two parts')
         return True
 
-    def draw_partition():
+    def belong(P: tp.Tuple[float, float], segment) -> bool:
+        eps = 1e-9
+        v1 = vector(P, segment[0])
+        v2 = vector(P, segment[1])
+        return abs(cross_product(v1, v2)) < eps and dot_product(v1, v2) <= 0
+
+    def check_all_points_on_sides() -> bool:
+        """
+        Checks that any point from Omega
+        lies on the corresponding side of the tire
+        """
+        ones = [i for i in range(len(Bitmask)) if Bitmask[i] == 1]
+        it = 0
+        curSeg = Points[Omega[ones[it - 1]]], Points[Omega[ones[it]]]
+        for i in range(len(Omega)):
+            if Bitmask[i]:
+                it += 1
+                curSeg = Points[Omega[ones[it - 1]]], Points[Omega[ones[it % len(ones)]]]
+            elif not belong(Points[Omega[i]], curSeg):
+                print(f'Point {Omega[i]} do not belong to segment {Omega[ones[it - 1]]}{Omega[ones[it]]}')
+                return False
+        print('All points from Omega lies on the corresponding sides of the tire')
+        return True
+
+    def draw_partition() -> None:
         plt.figure(figsize=(7, 7))
         for Part in Partition:
             for i in range(len(Part)):
@@ -103,14 +131,19 @@ def check(Title: str,
         plt.xlim((-0.7, 0.7))
         plt.ylim((-0.7, 0.7))
 
+        for i in range(len(Omega)):
+            if Bitmask[i]:
+                plt.scatter(*Points[Omega[i]], color='black')
+
         plt.title(Title)
         plt.show()
-    
+
     print('\n' + Title)
     mxdiam = check_diameters()
     flag1 = check_sum_area()
     flag2 = check_any_edge_in_two()
-    if flag1 and flag2:
+    flag3 = check_all_points_on_sides()
+    if flag1 and flag2 and flag3:
         print('Partition of Omega is correct')
     else:
         print('Partition is incorrect')
@@ -118,10 +151,11 @@ def check(Title: str,
 
     return None
 
+
 def read_json(file):
     """
     Reads the json file containing
-    the fields Title, Points Omega and Partition.
+    the fields Title, Points, Omega, Bitmask and Partition.
     """
     with open(file) as json_file:
         data = json.load(json_file)
@@ -129,14 +163,14 @@ def read_json(file):
         raw_points = data['Points']
         Points = {key: eval(val) for key, val in raw_points.items()}
         Omega = eval(data['Omega'])
+        Bitmask = eval(data['Bitmask'])
         raw_partition = data['Partition']
         Partition = [eval(polygon) for polygon in raw_partition]
-    return Title, Points, Omega, Partition
+    return Title, Points, Omega, Bitmask, Partition
 
 check(*read_json('d5_omega6_2.json'))
 check(*read_json('d5_omega6_11.json'))
 check(*read_json('d5_omega6_121.json'))
-check(*read_json('d5_omega6_122.json'))
 check(*read_json('d5_omega6_123.json'))
 check(*read_json('d11_omega2.json'))
 check(*read_json('d13_omega2.json'))

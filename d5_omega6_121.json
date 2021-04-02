@@ -1,5 +1,5 @@
 {
-    "Title": "The Partition of Omega1.2.1 into 5 parts",
+    "Title": "The Partition of Omega6_1.2.1 into 5 parts",
     
     "Points": {
         "O": "(0, 0)",
@@ -23,6 +23,7 @@
     },
 
     "Omega": "('H', 'J', 'T', 'Zp', 'Np', 'Wp', 'E', 'Pp', 'L', 'M', 'P', 'A', 'W', 'N', 'Z', 'U', 'I')",
+    "Bitmask":"(0,   1,   1,   1,    0,    1,    1,   0,    1,   1,   0,   1,   1,   0,   1,   1,   1)",
 
     "Partition": [
         "('O', 'H', 'J', 'T', 'Zp', 'Np')",
